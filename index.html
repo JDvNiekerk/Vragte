@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#183b2b">
+<title>Lemoenskop Oes & Vragte</title>
+<style>
+:root{--green:#183b2b;--green2:#24553d;--cream:#f5f4ed;--card:#fff;--ink:#17231b;--muted:#68736b;--line:#dce3dc;--red:#a93226;--gold:#e9b949}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--green);color:white;padding:22px 17px 17px;position:sticky;top:0;z-index:5;box-shadow:0 2px 10px #0002}
+header .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;opacity:.75}h1{font-size:24px;margin:3px 0 0}header p{margin:4px 0 0;font-size:13px;opacity:.85}
+nav{display:flex;gap:7px;overflow:auto;padding:10px;background:#e8ece6;position:sticky;top:103px;z-index:4}
+nav button{white-space:nowrap;border:0;border-radius:999px;padding:10px 13px;background:#d8dfd7;color:#24372b;font-weight:700}
+nav button.active{background:var(--green);color:white}
+main{max-width:900px;margin:0 auto;padding:14px 13px 40px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 13px;box-shadow:0 2px 7px #14271a08}
+h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:0 0 9px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:700;color:#435148;margin:0 0 5px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5cc;border-radius:10px;background:#fff;color:var(--ink);font:inherit;min-width:0}
+input:focus,select:focus{outline:2px solid #7aa88a;border-color:var(--green2)}
+button.primary,button.secondary,button.danger{border:0;border-radius:11px;padding:12px 15px;font-weight:750;font:inherit;cursor:pointer}
+button.primary{background:var(--green);color:white}button.secondary{background:#e7eee8;color:var(--green)}button.danger{background:#f8e8e6;color:var(--red)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.actions button{flex:1}
+.hint{font-size:12px;color:var(--muted);margin:8px 0 0}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#f1f5f0;border-radius:12px;padding:13px}.stat strong{display:block;font-size:23px;color:var(--green);font-variant-numeric:tabular-nums}.stat span{font-size:12px;color:var(--muted)}
+.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;min-width:540px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:#536157;background:#f7f9f6;font-size:12px}
+.pill{display:inline-block;border-radius:999px;padding:4px 8px;background:#e8f0e9;color:#24553d;font-size:11px;font-weight:800}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}.notice{padding:11px 12px;background:#fff5d9;border-radius:10px;font-size:13px;margin-bottom:12px}
+.location-block{margin-top:13px}.location-title{font-weight:800;margin:0 0 8px}.stockrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.stockrow:last-child{border:0}.stockrow strong{font-variant-numeric:tabular-nums}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:8px 0 20px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.full{grid-column:auto}nav{top:103px}.stats{grid-template-columns:1fr 1fr}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">Lemoenskop • Plaasbestuur</div><h1>Oes & Vragte</h1><p>Drywers, vragte en voorraad op een plek</p></header>
+<nav id="nav">
+<button class="active" data-tab="home">Oorsig</button><button data-tab="load">Nuwe vrag</button><button data-tab="move">Skuif voorraad</button><button data-tab="stock">Voorraad</button><button data-tab="drivers">Drywers</button><button data-tab="history">Vragte & data</button>
+</nav>
+<main>
+<section id="home" class="panel active">
+<div class="card"><h2>Voorraad-oorsig</h2><div class="stats" id="summary"></div></div>
+<div class="card"><h2>Voorraad per bestemming</h2><div id="homeStock"></div></div>
+<div class="card"><h2>Vinnige aksies</h2><div class="actions"><button class="primary" onclick="showTab('load')">+ Teken nuwe vrag aan</button><button class="secondary" onclick="showTab('move')">Skuif voorraad</button></div></div>
+</section>
+<section id="load" class="panel">
+<div class="card"><h2>Registreer nuwe vrag</h2><div class="notice">Gebruik dit vir 'n nuwe oes-/afleweringsvrag. Die tonne word by die gekose bestemming bygetel.</div>
+<form id="loadForm"><div class="grid">
+<div><label for="loadDriver">Drywer</label><select id="loadDriver" required></select></div>
+<div><label for="loadProduct">Produk</label><select id="loadProduct" required><option>Koring</option><option>Canola</option><option>Gars</option><option>Ander</option></select></div>
+<div><label for="loadTo">Waarheen ry die vrag?</label><select id="loadTo" required><option>Stoor</option><option>Bunker</option><option>Dorp</option></select></div>
+<div><label for="loadTonnes">Tonne</label><input id="loadTonnes" type="number" min="0.01" step="0.01" placeholder="bv. 32.5" required></div>
+<div><label for="loadDate">Datum</label><input id="loadDate" type="date" required></div>
+<div><label for="loadTicket">Kaartjie / verwysing (opsioneel)</label><input id="loadTicket" placeholder="bv. weegbrugkaartjie"></div>
+<div class="full"><label for="loadNotes">Notas (opsioneel)</label><input id="loadNotes" placeholder="Enige ekstra besonderhede"></div>
+</div><div class="actions"><button class="primary" type="submit">Stoor vrag</button></div></form>
+<p class="hint">Elke nuwe vrag word as 'n inkomende vrag vanaf die land/oes geregistreer.</p></div>
+</section>
+<section id="move" class="panel">
+<div class="card"><h2>Skuif voorraad tussen plekke</h2><div class="notice">Voorbeeld: 30 ton koring ry uit die stoor na die dorp. Die app trek 30 ton van die stoor af en tel 30 ton by die dorp.</div>
+<form id="moveForm"><div class="grid">
+<div><label for="moveDriver">Drywer</label><select id="moveDriver" required></select></div>
+<div><label for="moveProduct">Produk</label><select id="moveProduct" required><option>Koring</option><option>Canola</option><option>Gars</option><option>Ander</option></select></div>
+<div><label for="moveFrom">Van</label><select id="moveFrom" required><option>Stoor</option><option>Bunker</option><option>Dorp</option></select></div>
+<div><label for="moveTo">Na</label><select id="moveTo" required><option>Dorp</option><option>Bunker</option><option>Stoor</option></select></div>
+<div><label for="moveTonnes">Tonne</label><input id="moveTonnes" type="number" min="0.01" step="0.01" placeholder="bv. 30" required></div>
+<div><label for="moveDate">Datum</label><input id="moveDate" type="date" required></div>
+<div class="full"><label for="moveNotes">Notas (opsioneel)</label><input id="moveNotes" placeholder="bv. aflewering aan meule"></div>
+</div><div class="actions"><button class="primary" type="submit">Bevestig verskuiwing</button></div></form>
+<p class="hint" id="moveHint">Die app sal keer dat jy meer tonne skuif as wat beskikbaar is.</p></div>
+</section>
+<section id="stock" class="panel">
+<div class="card"><h2>Huidige voorraad</h2><p class="hint">Bereken uit alle aangetekende vragte en verskuiwings. Negatiewe voorraad word nie toegelaat nie.</p><div id="stockContent"></div></div>
+</section>
+<section id="drivers" class="panel">
+<div class="card"><h2>Voeg drywer by</h2><form id="driverForm"><div class="grid">
+<div><label for="driverName">Drywer se naam</label><input id="driverName" placeholder="Volle naam" required></div>
+<div><label for="driverPlate">Lorrie se nommerplaat</label><input id="driverPlate" placeholder="bv. CA 123-456" required></div>
+</div><div class="actions"><button class="primary" type="submit">Stoor drywer</button></div></form></div>
+<div class="card"><h2>Geregistreerde drywers</h2><div id="driverList"></div></div>
+</section>
+<section id="history" class="panel">
+<div class="card"><h2>Vragte en verskuiwings</h2><label for="historyFilter">Filter volgens produk</label><select id="historyFilter"><option value="">Alle produkte</option><option>Koring</option><option>Canola</option><option>Gars</option><option>Ander</option></select><div id="historyContent" style="margin-top:12px"></div></div>
+<div class="card"><h2>Uitvoer en rugsteun</h2><p class="hint">Laai jou data af om dit in Excel te gebruik of om 'n rugsteunkopie te hou.</p><div class="actions"><button class="secondary" id="csvBtn">Laai vragte af (CSV)</button><button class="secondary" id="backupBtn">Rugsteun alles (JSON)</button></div>
+<div class="actions"><label class="secondary" style="display:block;flex:1;text-align:center;cursor:pointer">Herstel rugsteun (JSON)<input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></label></div>
+<p class="hint">Data word tans op hierdie toestel se webblaaier gestoor. Rugsteun gereeld; dit sinkroniseer nie outomaties tussen fone nie.</p></div>
+</section>
+<footer>Oes & Vragte • Data bly op hierdie toestel totdat jy dit uitvoer of rugsteun.</footer>
+</main>
+<script>
+const KEY='lemoenskop_harvest_trucks_v1';
+const products=['Koring','Canola','Gars','Ander'];
+const places=['Stoor','Bunker','Dorp'];
+let data={drivers:[],loads:[]};
+try{const saved=localStorage.getItem(KEY);if(saved)data=JSON.parse(saved);if(!Array.isArray(data.drivers))data.drivers=[];if(!Array.isArray(data.loads))data.loads=[];}catch(e){}
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toLocaleDateString('en-CA');
+['loadDate','moveDate'].forEach(id=>$(id).value=today());
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render();}
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='load'||id==='move')renderDriverSelects();}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function tonnes(n){return (Math.round((Number(n)||0)*100)/100).toLocaleString('af-ZA',{minimumFractionDigits:0,maximumFractionDigits:2})+' t';}
+function driverLabel(d){return d.name+' • '+d.plate;}
+function renderDriverSelects(){['loadDriver','moveDriver'].forEach(id=>{const s=$(id),old=s.value;s.innerHTML='<option value="">Kies drywer…</option>'+data.drivers.map(d=>`<option value="${d.id}">${escapeHTML(driverLabel(d))}</option>`).join('');if(data.drivers.some(d=>d.id===old))s.value=old;});}
+function getDriver(id){return data.drivers.find(d=>d.id===id);}
+function balances(){
+ const b={};places.forEach(p=>b[p]={});products.forEach(prod=>places.forEach(p=>b[p][prod]=0));
+ data.loads.forEach(l=>{const q=Number(l.tonnes)||0;if(l.type==='load'){if(b[l.to]&&b[l.to][l.product]!==undefined)b[l.to][l.product]+=q;}else if(l.type==='move'){if(b[l.from]&&b[l.from][l.product]!==undefined)b[l.from][l.product]-=q;if(b[l.to]&&b[l.to][l.product]!==undefined)b[l.to][l.product]+=q;}});
+ return b;
+}
+function fmtStockTable(target,compact=false){const b=balances();$(target).innerHTML=places.map(p=>{const rows=products.map(prod=>`<div class="stockrow"><span>${prod}</span><strong>${tonnes(b[p][prod])}</strong></div>`).join('');const total=products.reduce((s,prod)=>s+b[p][prod],0);return `<div class="location-block"><div class="location-title">${p} <span class="pill">${tonnes(total)} totaal</span></div>${rows}</div>`;}).join('');}
+function renderDrivers(){renderDriverSelects();$('driverList').innerHTML=data.drivers.length?`<div class="tablewrap"><table><thead><tr><th>Drywer</th><th>Nommerplaat</th><th></th></tr></thead><tbody>${data.drivers.map(d=>`<tr><td>${escapeHTML(d.name)}</td><td>${escapeHTML(d.plate)}</td><td><button class="danger" onclick="deleteDriver('${d.id}')">Verwyder</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nog geen drywers nie. Voeg jou eerste drywer hierbo by.</div>';}
+function deleteDriver(id){if(data.loads.some(l=>l.driverId===id)){alert('Hierdie drywer het reeds vragte aangeteken en kan nie verwyder word nie.');return;}if(confirm('Verwyder hierdie drywer?')){data.drivers=data.drivers.filter(d=>d.id!==id);save();}}
+function renderHistory(){const filter=$('historyFilter').value;const rows=[...data.loads].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||0)-(a.createdAt||0)).filter(l=>!filter||l.product===filter);$('historyContent').innerHTML=rows.length?`<div class="tablewrap"><table><thead><tr><th>Datum</th><th>Drywer / lorrie</th><th>Produk</th><th>Beweging</th><th>Tonne</th></tr></thead><tbody>${rows.map(l=>{const d=getDriver(l.driverId);return `<tr><td>${escapeHTML(l.date||'')}</td><td>${escapeHTML(d?driverLabel(d):l.driverSnapshot||'Onbekend')}</td><td>${escapeHTML(l.product)}</td><td>${l.type==='load'?'Oes/nuwe vrag → '+escapeHTML(l.to):escapeHTML(l.from)+' → '+escapeHTML(l.to)}${l.ticket?'<br><span class="hint">Kaartjie: '+escapeHTML(l.ticket)+'</span>':''}${l.notes?'<br><span class="hint">'+escapeHTML(l.notes)+'</span>':''}</td><td><strong>${tonnes(l.tonnes)}</strong></td></tr>`;}).join('')}</tbody></table></div>`:'<div class="empty">Geen vragte vir hierdie filter nie.</div>';}
+function render(){renderDrivers();fmtStockTable('stockContent');fmtStockTable('homeStock');renderHistory();const b=balances();const total=places.reduce((s,p)=>s+products.reduce((ss,prod)=>ss+b[p][prod],0),0);const todayLoads=data.loads.filter(l=>l.date===today()&&l.type==='load').reduce((s,l)=>s+Number(l.tonnes||0),0);$('summary').innerHTML=`<div class="stat"><strong>${tonnes(total)}</strong><span>Totale voorraad oor alle plekke</span></div><div class="stat"><strong>${tonnes(b.Stoor.Koring+b.Stoor.Canola+b.Stoor.Gars+b.Stoor.Ander)}</strong><span>In die stoor</span></div><div class="stat"><strong>${tonnes(b.Bunker.Koring+b.Bunker.Canola+b.Bunker.Gars+b.Bunker.Ander)}</strong><span>In die bunker</span></div><div class="stat"><strong>${tonnes(b.Dorp.Koring+b.Dorp.Canola+b.Dorp.Gars+b.Dorp.Ander)}</strong><span>By die dorp afgelewer</span></div><div class="stat full"><strong>${tonnes(todayLoads)}</strong><span>Nuwe vragte vandag</span></div>`;}
+$('driverForm').addEventListener('submit',e=>{e.preventDefault();const name=$('driverName').value.trim(),plate=$('driverPlate').value.trim().toUpperCase();if(!name||!plate)return;if(data.drivers.some(d=>d.plate.toLowerCase()===plate.toLowerCase())){alert('Hierdie nommerplaat is reeds geregistreer.');return;}data.drivers.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name,plate});e.target.reset();save();});
+$('loadForm').addEventListener('submit',e=>{e.preventDefault();const driver=getDriver($('loadDriver').value),product=$('loadProduct').value,to=$('loadTo').value,ton=Number($('loadTonnes').value);if(!driver){alert('Voeg eers ’n drywer by en kies hom.');return;}if(!(ton>0)){alert('Tik ’n geldige aantal tonne in.');return;}data.loads.push({id:String(Date.now())+Math.random(),type:'load',driverId:driver.id,driverSnapshot:driverLabel(driver),product,to,tonnes:ton,date:$('loadDate').value||today(),ticket:$('loadTicket').value.trim(),notes:$('loadNotes').value.trim(),createdAt:Date.now()});e.target.reset();$('loadDate').value=today();save();alert('Vrag gestoor en voorraad opgedateer.');showTab('home');});
+$('moveForm').addEventListener('submit',e=>{e.preventDefault();const driver=getDriver($('moveDriver').value),product=$('moveProduct').value,from=$('moveFrom').value,to=$('moveTo').value,ton=Number($('moveTonnes').value);if(!driver){alert('Kies ’n drywer.');return;}if(from===to){alert('Kies twee verskillende plekke.');return;}if(!(ton>0)){alert('Tik ’n geldige aantal tonne in.');return;}const available=balances()[from][product];if(ton>available+0.0001){alert(`Daar is net ${tonnes(available)} ${product} beskikbaar by ${from}.`);return;}data.loads.push({id:String(Date.now())+Math.random(),type:'move',driverId:driver.id,driverSnapshot:driverLabel(driver),product,from,to,tonnes:ton,date:$('moveDate').value||today(),notes:$('moveNotes').value.trim(),createdAt:Date.now()});e.target.reset();$('moveDate').value=today();save();alert('Verskuiwing gestoor. Voorraad is by die vertrekplek afgetrek en by die bestemming bygetel.');showTab('home');});
+$('historyFilter').addEventListener('change',renderHistory);
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+$('csvBtn').addEventListener('click',()=>{const header=['Datum','Tipe','Drywer','Nommerplaat','Produk','Van','Na','Tonne','Kaartjie','Notas'];const rows=data.loads.map(l=>{const d=getDriver(l.driverId);return [l.date,l.type==='load'?'Nuwe vrag':'Verskuiwing',d?.name||l.driverSnapshot||'',d?.plate||'',l.product,l.type==='move'?l.from:'Land/oes',l.to,l.tonnes,l.ticket||'',l.notes||''];});const csv=[header,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');download('oes-en-vragte.csv','\ufeff'+csv,'text/csv;charset=utf-8;');});
+$('backupBtn').addEventListener('click',()=>download('oes-vragte-rugsteun.json',JSON.stringify(data,null,2),'application/json'));
+$('restoreFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const parsed=JSON.parse(await file.text());if(!Array.isArray(parsed.drivers)||!Array.isArray(parsed.loads))throw Error();if(!confirm('Herstel hierdie rugsteun? Dit sal die huidige data op hierdie toestel vervang.'))return;data=parsed;save();alert('Rugsteun herstel.');}catch(err){alert('Die lêer is nie ’n geldige Oes & Vragte-rugsteun nie.');}e.target.value='';});
+$('moveFrom').addEventListener('change',()=>{const from=$('moveFrom').value;const b=balances();$('moveHint').textContent='Beskikbaar by '+from+': '+products.map(p=>p+' '+tonnes(b[from][p])).join(' • ');});
+render();
+</script>
+</body></html>
